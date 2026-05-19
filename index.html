@@ -65,8 +65,6 @@
         .legend-railway { border-bottom-style: dashed; border-bottom-color: rgba(0,0,0,1.0); }
         .legend-dot { display:inline-block; vertical-align:middle; width:12px; height:12px; border-radius:50%; margin-right:8px; border:1px solid rgba(0,0,0,0.08); }
         .legend-settesorelle { background: rgba(99,197,160,1.0); }
-        .legend-box { display:inline-block; vertical-align:middle; width:14px; height:10px; border-radius:1px; margin-right:6px; border:1.5px solid #000000; }
-        .legend-municipalities { background: #d3d3d3; }
         .province-stat-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px; }
         .stat-card { background:#f7fbff;border:1px solid #d6e5fa;border-radius:12px;padding:12px 14px; }
         .stat-card .label { font-size:10px;color:#4a6d9c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px; }
@@ -614,11 +612,6 @@
             document.getElementById('sidebar-title').textContent = lang==='it'?'Provincia di Cuneo – Dashboard':'Cuneo Province – Dashboard';
             document.getElementById('sidebar-sub').textContent   = lang==='it'?'Clicca un comune per visualizzare i dati':'Click a municipality to view data';
             localStorage.setItem('cuneo_lang', lang);
-            /* Legend layer name translations */
-            var lb = document.getElementById('legend-cuneo-border');
-            if (lb) lb.textContent = lang==='it' ? 'Provincia di Cuneo' : 'Cuneo Province';
-            var ls = document.getElementById('legend-sedi-attive');
-            if (ls) ls.textContent = lang==='it' ? 'Comuni di Cuneo' : 'Cuneo municipalities';
             /* Rebuild endpoint labels in new language */
             if (lastEndpointFeatures) showEndpoints(lastEndpointFeatures);
             /* Update select option text */
@@ -978,7 +971,7 @@
             renderList(matched);
             document.getElementById('filter-results').style.display='block';
             allInfraVisible=false;
-            var vBtn=document.getElementById('f-viewall-btn'); if(vBtn) vBtn.innerHTML=currentLang==='it'?'&#9654; Vedi tutte le infrastrutture':'&#9654; View all infrastructure';
+            var vBtn=document.getElementById('f-viewall-btn'); if(vBtn) vBtn.innerHTML='&#9654; View all infrastructure';
             if(hasFilter&&(finalR.length>0||finalP.length>0)){
                 var bounds=L.latLngBounds([]);
                 layer_Tracciati_opere_CN__strada_ferrovia_rev_5.eachLayer(function(l){try{bounds.extend(l.getBounds());}catch(e){}});
@@ -1004,7 +997,7 @@
             document.getElementById('f-list').innerHTML='';
             document.getElementById('f-count').textContent='';
             allInfraVisible=false;
-            var vBtn=document.getElementById('f-viewall-btn'); if(vBtn) vBtn.innerHTML=currentLang==='it'?'&#9654; Vedi tutte le infrastrutture':'&#9654; View all infrastructure';
+            var vBtn=document.getElementById('f-viewall-btn'); if(vBtn) vBtn.innerHTML='&#9654; View all infrastructure';
             hideBanner();
             var btn=document.getElementById('filter-toggle-btn'); if(btn) btn.classList.remove('active');
         }
@@ -1270,7 +1263,7 @@
                 document.getElementById('f-list').innerHTML='';
                 document.getElementById('f-count').textContent='';
                 resultsEl.style.display='none';
-                btn.innerHTML=currentLang==='it'?'&#9654; Vedi tutte le infrastrutture':'&#9654; View all infrastructure';
+                btn.innerHTML='&#9654; View all infrastructure';
                 if(eyeBtn){ eyeBtn.innerHTML='<i class="fas fa-eye-slash"></i>'; eyeBtn.title='View all strategic infrastructure'; eyeBtn.classList.remove('active'); }
             }
         }
@@ -1383,9 +1376,26 @@
         }
 
         function openProjectPage(item) {
-            var nome = String(item.p['Tracciati_Nome']||item.p['Punti_Cuneo_Nome']||item.p['Nome']||'Project');
-            var url = 'project-info.html?name='+encodeURIComponent(nome);
-            window.location.href = url;
+            var nome = String(item.p['Tracciati_Nome']||item.p['Punti_Cuneo_Nome']||item.p['Nome']||'');
+            var idMap = {
+                'A33 (tronco I A6-Cuneo)':         'asti-cuneo',
+                'Linea Torino-Savona':              'linea-torino-savona',
+                'Linea Fossano-Cuneo':              'linea-fossano-cuneo',
+                'Variante di Demonte':              'variante-demonte',
+                'SS21':                             'ss21',
+                'Traforo Armo-Cantarana (SS28)':    'traforo-armo-cantarana',
+                'Traforo di Tenda':                 'traforo-tenda',
+                'SS20 - Colle di Tenda':            'ss20-colle-tenda',
+                'SS28 - Colle di Nava':             'ss28-colle-nava',
+                'Autoporto di Cuneo':               'autoporto-cuneo',
+                'Interporto di Rivalta Scrivia':    'interporto-rivalta',
+                'Aeroporto di Cuneo':               'aeroporto-cuneo',
+                'Porto di Savona':                  'porto-savona',
+                'Ferrovia Cuneo-Ventimiglia-Nizza': 'ferrovia-cuneo-ventimiglia',
+                'SS231 - Tangenziale di Alba':      'ss231-tangenziale-alba'
+            };
+            var id = idMap[nome] || 'default';
+            window.open('project-info.html?id=' + id, '_blank');
         }
 
         function showBanner(count) {
@@ -2084,8 +2094,8 @@
         var layer_sedi_group = L.layerGroup([layer_sedi_attive_2025_con_demografia_1, layer_sedi_hitarea]);
         var overlaysTree = [
             {label: '<span class="legend-dot legend-settesorelle"></span> Le Sette Sorelle', layer: layer_LeSetteSorelle},
-            {label: '&#9633; <span id="legend-cuneo-border">Cuneo Province</span>', layer: layer_CuneoBorder},
-            {label: '<span class="legend-box legend-municipalities"></span><span id="legend-sedi-attive">Cuneo municipalities</span>', layer: layer_sedi_group},]
+            {label: '&#9633; <span data-it="Provincia di Cuneo" data-en="Cuneo Province">Provincia di Cuneo</span>', layer: layer_CuneoBorder},
+            {label: '<svg width="20" height="14" style="vertical-align:middle;margin-right:4px;"><rect x="1" y="1" width="18" height="12" fill="rgba(180,180,180,0.3)" stroke="#000000" stroke-width="1.5" rx="1"/></svg><span data-it="Comuni di Cuneo" data-en="Cuneo Municipalities">Comuni di Cuneo</span>', layer: layer_sedi_group},]
         var lay = L.control.layers.tree(null, overlaysTree,{
             //namedToggle: true,
             //selectorBack: false,
